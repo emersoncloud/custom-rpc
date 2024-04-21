@@ -1,17 +1,7 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { CoreComponent } from "./_components/core"
 
 function Page() {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        padding: 12,
-      }}
-    >
-      <ConnectButton />
-    </div>
-  );
+    return <CoreComponent />
 }
 
-export default Page;
+export default Page
