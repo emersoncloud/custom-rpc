@@ -1,7 +1,7 @@
-import { CoreComponent } from "./_components/core"
+import { CoreComponent } from "./_components/core";
 
 function Page() {
-    return <CoreComponent />
+  return <CoreComponent />;
 }
 
-export default Page
+export default Page;
