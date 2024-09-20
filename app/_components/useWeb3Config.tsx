@@ -4,20 +4,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
-  argentWallet,
-  injectedWallet,
-  ledgerWallet,
-  metaMaskWallet,
-  rabbyWallet,
-  rainbowWallet,
-  trustWallet,
+  metaMaskWallet
 } from "@rainbow-me/rainbowkit/wallets";
-import { mainnet } from "@wagmi/core/chains";
-import { fallback, http } from "viem";
+import { avalanche, mainnet } from "@wagmi/core/chains";
 import type { Config } from "wagmi";
-import { createConfig, WagmiProvider } from "wagmi";
+import { createConfig, http, WagmiProvider } from "wagmi";
 import { web3Config } from "./baseWeb3Config";
-import { useLocalStorage } from "./useLocalStorage";
 
 const Web3Context = createContext<any>({});
 
@@ -38,21 +30,12 @@ interface Web3ProvidersProps {
 }
 const appName = "Demo App";
 
+
 const connectors = connectorsForWallets(
   [
     {
       groupName: "Recommended",
-      wallets: [metaMaskWallet, rabbyWallet],
-    },
-    {
-      groupName: "Other",
-      wallets: [
-        trustWallet,
-        argentWallet,
-        ledgerWallet,
-        injectedWallet,
-        rainbowWallet,
-      ],
+      wallets: [metaMaskWallet],
     },
   ],
   {
@@ -69,42 +52,55 @@ const config = createConfig({
 
 const DEFAULT_TRANSPORTS = {
   [mainnet.id]: [process.env.NEXT_PUBLIC_DEFAULT_ETHER_RPC],
+  [avalanche.id]: [process.env.NEXT_PUBLIC_DEFAULT_ETHER_RPC],
 };
 
 console.log("DEFAULT_TRAPNSOERPT", DEFAULT_TRANSPORTS);
 
 export function Web3Provider(props: Web3ProvidersProps) {
   const { children, initialState } = props;
-  const [transports, setTransports] = useLocalStorage<any>(
-    "custom.transports",
-    DEFAULT_TRANSPORTS,
-  );
+  // const [transports, setTransports] = useLocalStorage<any>(
+  //   "custom.transports",
+  //   DEFAULT_TRANSPORTS,
+  // );
+  const [transports, setTransports] = useState<any>([]);
 
   const [wagmiConfig, setWagmiConfig] = useState<Config | null>(null);
 
   useEffect(() => {
-    console.log("RUNING USER EFFECT");
+    // local stroage is updated automaticallty with wagmi config
+    // create the chain here with defineChain
+    // use the chain
+    // set the transport with http(ourRpcUrl)
     if (Object.keys(transports).length > 0) {
-      console.log("object.keys", transports);
+      console.log("transports is longer so doing something about it")
       setWagmiConfig(
-        // @ts-expect-error: todo fix
         createConfig({
           connectors: [...connectors],
           multiInjectedProviderDiscovery: false,
-          ...web3Config,
-          transports: Object.fromEntries(
-            Object.entries(transports).map(([chainId, urls]) => [
-              chainId,
-              fallback((urls || []).map((url) => http(url))),
-            ]),
-          ),
+          chains: [...web3Config.chains, avalanche],
+          transports: {
+    [mainnet.id]: http(), // eth.alchemhy
+    [avalanche.id]: http(), // api.avax
+    // doing this dynamically
+          }
+          // chains: [mainnet, avalanche],
+          // transports: Object.fromEntries(
+          //   Object.entries(transports).map(([chainId, urls]) => [
+          //     chainId,
+          //     fallback((urls || []).map((url) => {
+          //       http(url)
+          //     })),
+          //   ]),
+          // ),
         }),
       );
     } else {
+      console.log("transports not long so not doing anything")
       setWagmiConfig(config);
     }
   }, [transports]);
-
+  
   const updateTransports = (newTransports: any) => {
     setTransports(newTransports);
   };

@@ -1,9 +1,9 @@
-import "../styles/global.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { Providers } from "./providers";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
+import "../styles/global.css";
 import { baseConfig } from "./_components/baseWeb3Config";
+import { Providers } from "./providers";
 
 function RootLayout({ children }: { children: React.ReactNode }) {
   const initialState = cookieToInitialState(

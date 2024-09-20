@@ -15,7 +15,7 @@ function getActiveUrl(provider: UsePublicClientReturnType) {
 export function CoreComponent() {
   const provider = usePublicClient();
   const { transports, updateTransports } = useWeb3Config();
-  const { chain } = useAccount();
+  const { chain,address } = useAccount();
   const [newRpc, setNewRpc] = useState<string>("");
   const [showAddRpc, setShowAddRpc] = useState<boolean>(false);
 
@@ -24,7 +24,7 @@ export function CoreComponent() {
   const handleAddRpc = () => {
     const updatedTransports = {
       ...transports,
-      [chainId]: [newRpc, ...transports[chainId]],
+      [chainId]: [newRpc],
     };
     updateTransports(updatedTransports);
     setNewRpc("");
@@ -102,7 +102,7 @@ export function CoreComponent() {
                   .map((rpcUrl: string, _index: number) => (
                     <div key={rpcUrl}>
                       <div>
-                        <input type="text" value={rpcUrl} />
+                        <input type="text" value={rpcUrl} readOnly />
                         <button
                           name="remove-rpc-listed"
                           onClick={() => handleRemoveRpc(rpcUrl)}
@@ -118,6 +118,8 @@ export function CoreComponent() {
         </div>
         <div style={{ marginTop: 12 }}>
           <label htmlFor="rpcUrl">Active RPC: {activeUrl}</label>
+          <label htmlFor="rpcUrl">Address: {address}</label>
+          <label htmlFor="rpcUrl">Chain ID: {chainId}</label>
         </div>
       </div>
     </div>
